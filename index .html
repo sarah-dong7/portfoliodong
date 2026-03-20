@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>董非 | 个人作品集 - 用文字链接用户，用创意赋能品牌</title>
+    <!-- 引入优雅字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #F5F0E8;
+            --paper-texture: #F5E6D3;
+            --title-color: #6B4F3C;
+            --text-color: #3E2E23;
+            --accent-color: #C17B4D;
+            --serif-font: 'Playfair Display', "Songti SC", "STSong", "华文宋体", serif;
+            --sans-font: 'Inter', "Microsoft YaHei", "微软雅黑", sans-serif;
+            --transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            cursor: none;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--sans-font);
+            line-height: 1.6;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* 亚麻纹理底膜 */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--paper-texture);
+            background-image: url('https://www.transparenttextures.com/patterns/natural-paper.png');
+            opacity: 0.3;
+            z-index: -2;
+            pointer-events: none;
+        }
+
+        /* 萤火虫粒子画布 */
+        #fireflies {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* 自定义指针 */
+        #cursor {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 0.2s ease, opacity 0.3s ease;
+        }
+
+        #cursor.hover {
+            transform: scale(6);
+            background: rgba(193, 123, 77, 0.2);
+            border: 1px solid var(--accent-color);
+        }
+
+        /* 导航 */
+        .nav-btn {
+            position: fixed;
+            top: 40px;
+            right: 40px;
+            z-index: 1000;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-btn span {
+            width: 30px;
+            height: 1.5px;
+            background: var(--title-color);
+            transition: var(--transition);
+        }
+
+        .nav-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-color);
+            z-index: 999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .nav-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .nav-links {
+            list-style: none;
+            text-align: center;
+        }
+
+        .nav-links li {
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .nav-links a {
+            font-family: var(--serif-font);
+            font-size: 3rem;
+            color: var(--title-color);
+            text-decoration: none;
+            display: block;
+            transform: translateY(100%);
+            transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .nav-overlay.active .nav-links a {
+            transform: translateY(0);
+        }
+
+        /* 页面分段 */
+        section {
+            min-height: 100vh;
+            padding: 100px 10%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* 首页 Hero */
+        #hero {
+            text-align: center;
+        }
+
+        #hero h1 {
+            font-family: var(--serif-font);
+            font-size: clamp(4rem, 10vw, 8rem);
+            color: var(--title-color);
+            margin-bottom: 20px;
+            font-weight: 400;
+        }
+
+        .hero-bio {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .slogan {
+            font-size: 1.2rem;
+            color: var(--accent-color);
+            letter-spacing: 2px;
+            margin-bottom: 30px;
+        }
+
+        .tags {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 1.2s forwards 0.8s;
+        }
+
+        .tag {
+            padding: 6px 18px;
+            border: 1px solid rgba(107, 79, 60, 0.3);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: var(--title-color);
+            background: rgba(255,255,255,0.2);
+        }
+
+        /* 作品展示 Portfolio */
+        .section-title {
+            font-family: var(--serif-font);
+            font-size: 2.5rem;
+            color: var(--title-color);
+            margin-bottom: 50px;
+            position: relative;
+        }
+
+        .category-title {
+            font-size: 1.1rem;
+            color: var(--accent-color);
+            margin-bottom: 30px;
+            border-bottom: 1px solid rgba(107, 79, 60, 0.1);
+            padding-bottom: 10px;
+            display: block;
+        }
+
+        /* 统一的四列横排布局 */
+        .quad-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 25px;
+            margin-bottom: 100px;
+            align-items: end;
+        }
+
+        /* 双列居中横排布局 */
+        .duo-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            margin-bottom: 100px;
+            align-items: end;
+            max-width: 60%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* 手机模型样式 */
+        .phone-mockup {
+            position: relative;
+            width: 100%;
+            background: #121212;
+            border-radius: 24px;
+            padding: 6px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+            border: 1px solid rgba(255,255,255,0.08);
+            transition: var(--transition);
+        }
+
+        .phone-screen {
+            width: 100%;
+            aspect-ratio: 9/19.5;
+            background: #f0f0f0;
+            border-radius: 18px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .phone-screen img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 1.2s var(--transition);
+        }
+
+        /* 动画激活状态 */
+        .work-item {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: var(--transition);
+        }
+
+        .work-item.in-view {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Hover 动效 */
+        .work-item:hover .phone-mockup,
+        .work-item:hover .img-container {
+            transform: translateY(-12px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(193, 123, 77, 0.15);
+        }
+
+        /* 通用容器 (平面设计/策划) */
+        .img-container {
+            width: 100%;
+            overflow: hidden;
+            border-radius: 4px;
+            background: #eee;
+            margin-bottom: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            transition: var(--transition);
+        }
+
+        .img-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 1.2s var(--transition);
+        }
+
+        .work-item:hover img {
+            transform: scale(1.05);
+        }
+
+        .ratio-3-4 { aspect-ratio: 3/4; }
+        .ratio-16-9 { aspect-ratio: 16/9; }
+
+        .work-info h3 {
+            font-family: var(--serif-font);
+            font-size: 0.95rem;
+            color: var(--title-color);
+            margin-top: 15px;
+            line-height: 1.3;
+        }
+
+        .work-info p {
+            font-size: 0.75rem;
+            opacity: 0.6;
+            margin-top: 4px;
+        }
+
+        /* 联系方式 */
+        #contact { text-align: center; }
+        .contact-cta {
+            font-family: var(--serif-font);
+            font-size: clamp(2rem, 5vw, 4rem);
+            color: var(--title-color);
+            margin-bottom: 60px;
+        }
+        .contact-details {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 响应式适配 */
+        @media (max-width: 1024px) {
+            .quad-row { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+            .duo-row { grid-template-columns: repeat(2, 1fr); max-width: 100%; }
+        }
+
+        @media (max-width: 640px) {
+            section { padding: 80px 6%; }
+            .quad-row, .duo-row { grid-template-columns: 1fr; max-width: 320px; margin: 0 auto 80px; }
+            #hero h1 { font-size: 4rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="cursor"></div>
+    <canvas id="fireflies"></canvas>
+
+    <div class="nav-btn" id="menuToggle">
+        <span></span>
+        <span></span>
+    </div>
+
+    <div class="nav-overlay" id="navOverlay">
+        <ul class="nav-links">
+            <li><a href="#hero">首页</a></li>
+            <li><a href="#portfolio">作品</a></li>
+            <li><a href="#contact">联系</a></li>
+        </ul>
+    </div>
+
+    <!-- Section 1: 首页 -->
+    <section id="hero">
+        <h1 class="work-item">董非</h1>
+        <div class="hero-bio">
+            <p class="slogan">用文字链接用户，用创意赋能品牌</p>
+            <div class="tags">
+                <span class="tag">辽宁师范大学</span>
+                <span class="tag">现居广州</span>
+                <span class="tag">品牌宣发</span>
+                <span class="tag">创意策划</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 2: 作品展示 -->
+    <section id="portfolio">
+        <h2 class="section-title">作品集 / Portfolio</h2>
+
+        <!-- 栏目A: 微信公众号运营 (4列) -->
+        <span class="category-title">微信公众号运营 / Official Account Operations</span>
+        <div class="quad-row">
+            <div class="work-item">
+                <div class="phone-mockup">
+                    <div class="phone-screen">
+                        <img src="https://user4993.cn.imgto.link/public/20260319/20260319113306-115-2.avif" alt="抓取校园热点">
+                    </div>
+                </div>
+                <div class="work-info">
+                    <h3>抓取校园热点</h3>
+                    <p>毕业生的定制化内容</p>
+                </div>
+            </div>
+            <div class="work-item">
+                <div class="phone-mockup">
+                    <div class="phone-screen">
+                        <img src="https://user4993.cn.imgto.link/public/20260319/20260319112728-110-2.avif" alt="新生入学家书">
+                    </div>
+                </div>
+                <div class="work-info">
+                    <h3>抓取校园热点</h3>
+                    <p>新生入学家书征稿</p>
+                </div>
+            </div>
+            <div class="work-item">
+                <div class="phone-mockup">
+                    <div class="phone-screen">
+                        <img src="https://user4993.cn.imgto.link/public/20260319/20260319112939-114-2.avif" alt="母亲节祝福">
+                    </div>
+                </div>
+                <div class="work-info">
+                    <h3>把握节庆热点</h3>
+                    <p>母亲节的暖心祝福</p>
+                </div>
+            </div>
+            <div class="work-item">
+                <div class="phone-mockup">
+                    <div class="phone-screen">
+                        <img src="https://user4993.cn.imgto.link/public/20260319/20260319112835-113-2.avif" alt="新年定制日历">
+                    </div>
+                </div>
+                <div class="work-info">
+                    <h3>把握节庆热点</h3>
+                    <p>新年校园定制日历</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 栏目B: 平面设计 (4列) -->
+        <span class="category-title">平面设计 / Graphic Design</span>
+        <div class="quad-row">
+            <div class="work-item">
+                <div class="img-container ratio-3-4">
+                    <img src="https://user4993.cn.imgto.link/public/20260319/20260318095914-104-2.avif" alt="动态海报">
+                </div>
+                <div class="work-info">
+                    <h3>动态海报</h3>
+                    <p>带动学生互动</p>
+                </div>
+            </div>
+            <div class="work-item">
+                <div class="img-container ratio-3-4">
+                    <img src="https://user4993.cn.imgto.link/public/20260319/20260319132841-122-2.avif" alt="PPT设计">
+                </div>
+                <div class="work-info">
+                    <h3>PPT设计</h3>
+                    <p>明确场景风格</p>
+                </div>
+            </div>
+            <div class="work-item">
+                <div class="img-container ratio-16-9">
+                    <img src="https://user4993.cn.imgto.link/public/20260319/20260319125818-120-2.avif" alt="产品海报">
+                </div>
+                <div class="work-info">
+                    <h3>产品海报</h3>
+                    <p>Slogan种用户心智</p>
+                </div>
+            </div>
+            <div class="work-item">
+                <div class="img-container ratio-16-9">
+                    <img src="https://user4993.cn.imgto.link/public/20260319/20260318100236-106-2.avif" alt="活动海报">
+                </div>
+                <div class="work-info">
+                    <h3>活动海报</h3>
+                    <p>高效精准传递信息</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 栏目C: 项目策划 (上4下2布局) -->
+        <span class="category-title">项目策划 / Project Planning</span>
+        
+        <!-- 上排 4 张 -->
+        <div class="quad-row">
+            <div class="work-item">
+                <div class="img-container ratio-16-9">
+                    <img src="https://user0157.cn.imgto.link/public/20260320/1.avif" alt="非遗工艺品牌化">
+                </div>
+                <div class="work-info">
+                    <h3>非遗工艺品牌化</h3>
+                    <p>建立用户价值锚</p>
+                </div>
+            </div>
+            <div class="work-item">
+                <div class="img-container ratio-16-9">
+                    <img src="https://user0157.cn.imgto.link/public/20260320/2.avif" alt="圈层渗透">
+                </div>
+                <div class="work-info">
+                    <h3>圈层渗透</h3>
+                    <p>深度人群画像</p>
+                </div>
+            </div>
+            <div class="work-item">
+                <div class="img-container ratio-16-9">
+                    <img src="https://user0157.cn.imgto.link/public/20260320/3.avif" alt="内容矩阵1">
+                </div>
+                <div class="work-info">
+                    <h3>内容矩阵与流量截击</h3>
+                    <p>差异化内容构建 (I)</p>
+                </div>
+            </div>
+            <div class="work-item">
+                <div class="img-container ratio-16-9">
+                    <img src="https://user0157.cn.imgto.link/public/20260320/4.avif" alt="内容矩阵2">
+                </div>
+                <div class="work-info">
+                    <h3>内容矩阵与流量截击</h3>
+                    <p>差异化内容构建 (II)</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 下排 2 张 (居中) -->
+        <div class="duo-row">
+            <div class="work-item">
+                <div class="img-container ratio-16-9">
+                    <img src="https://user0157.cn.imgto.link/public/20260320/6.avif" alt="公私域联动">
+                </div>
+                <div class="work-info">
+                    <h3>公私域联动</h3>
+                    <p>私域闭环沉淀</p>
+                </div>
+            </div>
+            <div class="work-item">
+                <div class="img-container ratio-16-9">
+                    <img src="https://user0157.cn.imgto.link/public/20260320/5.avif" alt="全渠道货架矩阵">
+                </div>
+                <div class="work-info">
+                    <h3>全渠道货架矩阵</h3>
+                    <p>分层定价策略</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 3: 联系方式 -->
+    <section id="contact">
+        <p class="contact-cta">期待与您的合作</p>
+        <div class="contact-details">
+            <span>电话: +86166-3762-2697</span>
+            <span>邮箱: dongfei2697@126.com</span>
+        </div>
+    </section>
+
+    <script>
+        // 指针逻辑
+        const cursor = document.getElementById('cursor');
+        document.addEventListener('mousemove', e => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+        document.querySelectorAll('a, .nav-btn').forEach(el => {
+            el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+            el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+        });
+
+        // 导航逻辑
+        const menuToggle = document.getElementById('menuToggle');
+        const navOverlay = document.getElementById('navOverlay');
+        menuToggle.addEventListener('click', () => navOverlay.classList.toggle('active'));
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                navOverlay.classList.remove('active');
+                document.querySelector(link.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+
+        // 萤火虫背景
+        const canvas = document.getElementById('fireflies');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let mouse = { x: -100, y: -100 };
+        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resize);
+        window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+        resize();
+
+        class Particle {
+            constructor() { this.init(); }
+            init() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 0.5;
+                this.speedX = (Math.random() - 0.5) * 0.4;
+                this.speedY = (Math.random() - 0.5) * 0.4;
+                this.alpha = Math.random();
+                this.breathing = Math.random() * 0.015;
+            }
+            update() {
+                this.x += this.speedX; this.y += this.speedY;
+                const dx = mouse.x - this.x, dy = mouse.y - this.y;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                if (dist < 120) { this.x -= dx * 0.01; this.y -= dy * 0.01; }
+                this.alpha += this.breathing;
+                if (this.alpha > 0.8 || this.alpha < 0.1) this.breathing *= -1;
+                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+            }
+            draw() {
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
+                ctx.fillStyle = `rgba(193, 123, 77, ${this.alpha})`; ctx.fill();
+            }
+        }
+        for (let i = 0; i < 70; i++) particles.push(new Particle());
+        function animate() {
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            particles.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // 滚动观察
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('in-view'); });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.work-item').forEach(el => observer.observe(el));
+    </script>
+</body>
+</html>
